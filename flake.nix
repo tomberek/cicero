@@ -47,11 +47,17 @@
           in prev.writeShellScriptBin "nomad-dev" ''
             set -exuo pipefail
 
+            trap 'kill $(jobs -p)' EXIT
             sudo ${prev.nomad}/bin/nomad \
               agent \
               -dev \
               -config ${cfg} \
-              -plugin-dir "${final.nomad-driver-nix}/bin"
+              -plugin-dir "${final.nomad-driver-nix}/bin" &
+            sleep 5
+            while ! nomad node status; do
+              sleep 1
+            done
+            all-run
           '';
         } // (import ./runners.nix final prev);
 

@@ -14,6 +14,18 @@ value = "."
 name = "LOKI_ADDR"
 value = "http://127.0.0.1:3100"
 
+[[env]]
+name = "PIP_PREFIX"
+eval = "export PIP_PREFIX=$PWD/_build/pip_packages"
+
+[[env]]
+name = "PYTHONPATH"
+eval = "export PYTHONPATH=$PWD/_build/pip_packages/lib/python3.9/site-packages:$PYTHONPATH"
+
+[[env]]
+name = "PATH"
+eval = "export PATH=$PIP_PREFIX/bin:$PATH"
+
 [[commands]]
 package = "go"
 
@@ -57,6 +69,16 @@ name = "dev-run"
 command = "cue export ./jobs -e jobs.dev | nomad run -"
 help = "run postgres, loki, and liftbridge in nomad"
 
+[[commands]]
+name = "go-run"
+command = "go run . start --web-listen=:8084"
+help = "run this project"
+
+[[commands]]
+name = "all-run"
+command = "dev-run ; dbmate up ; go run . start --web-listen=:8084"
+help = "run all of this project"
+
 [devshell]
 name = "cicero"
 packages = [
@@ -76,4 +98,7 @@ packages = [
   "postgresql_12",
   "sqliteInteractive",
   "vector",
+  "python3",
+  "python3Packages.pip",
+  "python3Packages.requests",
 ]
